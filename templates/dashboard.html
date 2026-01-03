@@ -1,81 +1,527 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Dashboard | LAN Vault</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSN Secure Share</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+        
+        .topbar {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(29, 78, 216, 0.3);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .brand { display: flex; align-items: center; gap: 0.75rem; }
+        .brand-logo { height: 36px; width: auto; }
+        .brand-text { font-weight: 600; font-size: 1rem; color: #e0e7ff; }
+        .brand-text span { color: #60a5fa; }
+        
+        .topbar-right { display: flex; align-items: center; gap: 1.5rem; }
+        
+        .user-badge { 
+            display: flex; align-items: center; gap: 0.5rem;
+            background: linear-gradient(135deg, rgba(29, 78, 216, 0.2), rgba(37, 99, 235, 0.1));
+            padding: 0.5rem 1rem; border-radius: 25px;
+            border: 1px solid rgba(29, 78, 216, 0.3);
+            font-size: 0.85rem; color: #93c5fd;
+        }
+        .user-badge i { color: #60a5fa; }
+        .user-badge span { color: #e0e7ff; font-weight: 600; }
+        
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5; padding: 0.5rem 1rem; border-radius: 8px;
+            text-decoration: none; font-size: 0.85rem; font-weight: 500;
+            transition: all 0.2s; display: flex; align-items: center; gap: 0.375rem;
+        }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.25); color: #fecaca; }
+        
+        .network-bar {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(52, 211, 153, 0.1));
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 0.75rem 2rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem;
+        }
+        .network-bar i { color: #34d399; font-size: 1rem; }
+        .network-bar span { color: #94a3b8; }
+        .network-bar code {
+            background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 0.375rem 0.875rem; border-radius: 6px; color: #6ee7b7; font-weight: 600; font-size: 0.9rem;
+        }
+        
+        .main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .grid { display: grid; grid-template-columns: 380px 1fr; gap: 2rem; align-items: start; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        
+        .card {
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px);
+            border: 1px solid rgba(29, 78, 216, 0.15); border-radius: 16px;
+            overflow: hidden; margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background: linear-gradient(90deg, rgba(29, 78, 216, 0.15), rgba(37, 99, 235, 0.08));
+            border-bottom: 1px solid rgba(29, 78, 216, 0.15);
+            padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.625rem;
+        }
+        .card-header i { color: #60a5fa; font-size: 1.1rem; }
+        .card-header.green { background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(52, 211, 153, 0.08)); }
+        .card-header.green i { color: #34d399; }
+        .card-header.purple { background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), rgba(168, 85, 247, 0.08)); }
+        .card-header.purple i { color: #a78bfa; }
+        .card-header h3 { font-size: 0.95rem; font-weight: 600; color: #e2e8f0; flex: 1; }
+        .card-header .badge { background: rgba(255,255,255,0.1); padding: 0.25rem 0.625rem; border-radius: 12px; font-size: 0.75rem; color: #94a3b8; }
+        .card-body { padding: 1.25rem; }
+        
+        .upload-zone {
+            border: 2px dashed rgba(29, 78, 216, 0.4); border-radius: 12px;
+            padding: 2rem 1.5rem; text-align: center; cursor: pointer;
+            transition: all 0.3s; background: rgba(29, 78, 216, 0.05); margin-bottom: 1rem;
+        }
+        .upload-zone:hover { border-color: #3b82f6; background: rgba(29, 78, 216, 0.1); }
+        .upload-zone.active { border-color: #60a5fa; background: rgba(96, 165, 250, 0.15); box-shadow: 0 0 30px rgba(29, 78, 216, 0.2); }
+        .upload-zone i { font-size: 2.5rem; color: #60a5fa; margin-bottom: 0.75rem; display: block; }
+        .upload-zone p { color: #94a3b8; font-size: 0.9rem; }
+        .upload-zone span { color: #93c5fd; font-weight: 500; }
+        .file-input { display: none; }
+        
+        .file-ready {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(52, 211, 153, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.875rem 1rem;
+            border-radius: 10px; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
+        }
+        .file-ready i { color: #34d399; font-size: 1.25rem; }
+        .file-ready .fname { flex: 1; color: #6ee7b7; font-size: 0.9rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-ready .remove { color: #94a3b8; cursor: pointer; padding: 0.25rem; }
+        .file-ready .remove:hover { color: #f87171; }
+        
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+        
+        .select-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;
+        }
+        .select-all-btn {
+            background: rgba(29, 78, 216, 0.2); border: 1px solid rgba(29, 78, 216, 0.3);
+            color: #93c5fd; padding: 0.25rem 0.625rem; border-radius: 6px;
+            font-size: 0.75rem; cursor: pointer; transition: all 0.2s;
+        }
+        .select-all-btn:hover { background: rgba(29, 78, 216, 0.35); color: #bfdbfe; }
+        .select-all-btn.active { background: rgba(16, 185, 129, 0.25); border-color: rgba(16, 185, 129, 0.4); color: #6ee7b7; }
+        
+        .recipients-box {
+            background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(29, 78, 216, 0.25);
+            border-radius: 10px; max-height: 180px; overflow-y: auto;
+        }
+        .recipients-box::-webkit-scrollbar { width: 6px; }
+        .recipients-box::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        .recipients-box::-webkit-scrollbar-thumb { background: #1d4ed8; border-radius: 3px; }
+        
+        .recipient-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem 1rem; border-bottom: 1px solid rgba(29, 78, 216, 0.1);
+            cursor: pointer; transition: all 0.15s;
+        }
+        .recipient-item:last-child { border-bottom: none; }
+        .recipient-item:hover { background: rgba(29, 78, 216, 0.1); }
+        .recipient-item.selected { background: rgba(16, 185, 129, 0.15); }
+        
+        .recipient-checkbox {
+            width: 20px; height: 20px; border: 2px solid rgba(29, 78, 216, 0.4);
+            border-radius: 5px; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; flex-shrink: 0;
+        }
+        .recipient-checkbox i { color: transparent; font-size: 0.75rem; }
+        .recipient-item.selected .recipient-checkbox {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border-color: #34d399;
+        }
+        .recipient-item.selected .recipient-checkbox i { color: #fff; }
+        
+        .recipient-info { flex: 1; }
+        .recipient-info .name { font-size: 0.9rem; color: #e2e8f0; font-weight: 500; }
+        .recipient-info .status { font-size: 0.75rem; color: #64748b; display: flex; align-items: center; gap: 0.25rem; }
+        .recipient-info .status i { color: #4ade80; font-size: 0.5rem; }
+        
+        .selected-count {
+            background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 0.5rem 0.75rem; border-radius: 8px; margin-top: 0.75rem;
+            font-size: 0.8rem; color: #6ee7b7; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .selected-count i { font-size: 1rem; }
+        
+        .send-btn {
+            width: 100%; background: linear-gradient(135deg, #1d4ed8, #2563eb);
+            color: #fff; border: none; padding: 0.875rem; border-radius: 10px;
+            font-size: 0.95rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; box-shadow: 0 4px 15px rgba(29, 78, 216, 0.35);
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(29, 78, 216, 0.45); }
+        .send-btn:disabled { background: #334155; color: #64748b; box-shadow: none; transform: none; cursor: not-allowed; }
+        
+        .users-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .user-chip {
+            background: rgba(29, 78, 216, 0.1); border: 1px solid rgba(29, 78, 216, 0.2);
+            padding: 0.5rem 0.875rem; border-radius: 20px; font-size: 0.85rem; color: #93c5fd;
+            display: flex; align-items: center; gap: 0.375rem;
+        }
+        .user-chip i { font-size: 0.5rem; color: #4ade80; }
+        .user-chip.me { 
+            background: linear-gradient(135deg, rgba(29, 78, 216, 0.25), rgba(37, 99, 235, 0.15));
+            border-color: rgba(37, 99, 235, 0.4); color: #bfdbfe; font-weight: 600;
+        }
+        
+        .file-list { max-height: 300px; overflow-y: auto; }
+        .file-list::-webkit-scrollbar { width: 6px; }
+        .file-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }
+        .file-list::-webkit-scrollbar-thumb { background: #1d4ed8; border-radius: 3px; }
+        
+        .file-item {
+            display: flex; align-items: center; padding: 0.875rem; margin-bottom: 0.625rem;
+            background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(29, 78, 216, 0.1);
+            border-radius: 12px; transition: all 0.2s;
+        }
+        .file-item:hover { background: rgba(29, 78, 216, 0.1); border-color: rgba(29, 78, 216, 0.25); }
+        
+        .file-icon {
+            width: 44px; height: 44px; background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 1.1rem; margin-right: 0.875rem; flex-shrink: 0;
+        }
+        .file-item.inbox .file-icon { background: linear-gradient(135deg, #10b981, #34d399); }
+        
+        .file-info { flex: 1; min-width: 0; }
+        .file-info .name { font-size: 0.9rem; color: #f1f5f9; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.25rem; }
+        .file-info .meta { font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        
+        .from-tag {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.25); padding: 0.125rem 0.5rem;
+            border-radius: 4px; font-size: 0.75rem; color: #4ade80; font-weight: 500;
+        }
+        
+        .file-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+        .action-btn {
+            width: 36px; height: 36px; background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(29, 78, 216, 0.2); border-radius: 8px;
+            color: #94a3b8; display: flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: all 0.2s; font-size: 0.9rem;
+        }
+        .action-btn:hover { background: rgba(29, 78, 216, 0.2); border-color: #3b82f6; color: #93c5fd; }
+        .action-btn.delete:hover { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #f87171; }
+        
+        .empty-state { text-align: center; padding: 3rem 1.5rem; color: #475569; }
+        .empty-state i { font-size: 3rem; margin-bottom: 0.75rem; display: block; color: #334155; }
+        .empty-state p { font-size: 0.9rem; }
+    </style>
 </head>
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-dark bg-primary px-4">
-    <span class="navbar-brand">LAN Secure Vault</span>
-    <span class="text-white">Logged in as <b>{{ user }}</b></span>
-    <a href="/logout" class="btn btn-sm btn-light">Logout</a>
-</nav>
+<div class="topbar">
+    <div class="brand">
+        <svg class="brand-logo" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
+            <text x="5" y="40" font-family="Arial Black, sans-serif" font-size="42" font-weight="900" font-style="italic" fill="#1d4ed8">ssn</text>
+        </svg>
+        <span class="brand-text"><span>Secure</span> Share</span>
+    </div>
+    <div class="topbar-right">
+        <div class="user-badge">
+            <i class="bi bi-person-circle"></i>
+            Signed in as <span>{{ user }}</span>
+        </div>
+        <a href="/logout" class="logout-btn"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </div>
+</div>
 
-<div class="container mt-4">
-    <div class="row g-4">
+<div class="network-bar">
+    <i class="bi bi-broadcast"></i>
+    <span>Share with others on your network:</span>
+    <code>http://{{ net_info.ip }}:5000</code>
+</div>
 
-        <!-- SEND FILE -->
-        <div class="col-md-5">
-            <div class="card shadow-sm">
+<div class="main">
+    <div class="grid">
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-send-fill"></i>
+                    <h3>Send File</h3>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Send File</h5>
-
-                    <form action="/upload" method="post" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label class="form-label">Send To</label>
-                            <select class="form-select" name="receiver">
+                    <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+                        <div class="upload-zone" id="dropZone">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                            <p>Drop file here or <span>browse</span></p>
+                        </div>
+                        <input type="file" name="file" id="fileInput" class="file-input" required>
+                        
+                        <div class="file-ready" id="fileReady" style="display: none;">
+                            <i class="bi bi-file-earmark-check-fill"></i>
+                            <span class="fname" id="fileName"></span>
+                            <i class="bi bi-x-lg remove" id="removeFile"></i>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="select-header">
+                                <label>Send to</label>
+                                <button type="button" class="select-all-btn" id="selectAllBtn">
+                                    <i class="bi bi-check-all"></i> Select All
+                                </button>
+                            </div>
+                            <div class="recipients-box" id="recipientsBox">
                                 {% for u in users %}
                                     {% if u != user %}
-                                        <option value="{{ u }}">{{ u }}</option>
+                                    <div class="recipient-item" data-user="{{ u }}">
+                                        <div class="recipient-checkbox"><i class="bi bi-check"></i></div>
+                                        <div class="recipient-info">
+                                            <div class="name">{{ u }}</div>
+                                            <div class="status"><i class="bi bi-circle-fill"></i> Online</div>
+                                        </div>
+                                    </div>
                                     {% endif %}
                                 {% endfor %}
-                            </select>
+                            </div>
+                            <div class="selected-count" id="selectedCount" style="display: none;">
+                                <i class="bi bi-people-fill"></i>
+                                <span id="countText">0 recipients selected</span>
+                            </div>
+                            <div id="hiddenInputs"></div>
                         </div>
-
-                        <div class="mb-3">
-                            <input class="form-control" type="file" name="file" required>
-                        </div>
-
-                        <button class="btn btn-primary w-100">Send File</button>
+                        
+                        <button type="submit" class="send-btn" id="sendBtn" disabled>
+                            <i class="bi bi-send-fill"></i> Send File
+                        </button>
                     </form>
                 </div>
             </div>
-        </div>
-
-        <!-- RECEIVED FILES WITH SENDER INFO -->
-        <div class="col-md-7">
-            <div class="card shadow-sm">
+            
+            <div class="card">
+                <div class="card-header green">
+                    <i class="bi bi-people-fill"></i>
+                    <h3>Online Users</h3>
+                    <span class="badge">{{ users|length }}</span>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Received Files</h5>
-
-                    {% if received_files %}
-                        <ul class="list-group">
-                            {% for log in received_files %}
-                                <li class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong>{{ log.filename }}</strong><br>
-                                            <small class="text-muted">
-                                                Sent by {{ log.sender }} on {{ log.time }}
-                                            </small>
-                                        </div>
-                                        <a href="/download/{{ log.filename }}" class="btn btn-sm btn-success">
-                                            Download
-                                        </a>
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-muted">No files received yet.</p>
-                    {% endif %}
+                    <div class="users-grid">
+                        {% for u in users %}
+                            <div class="user-chip {{ 'me' if u == user else '' }}">
+                                <i class="bi bi-circle-fill"></i> {{ u }}{% if u == user %} (you){% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-
+        
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-folder-fill"></i>
+                    <h3>My Files</h3>
+                    <span class="badge">{{ files|length }} files</span>
+                </div>
+                <div class="card-body">
+                    <div class="file-list">
+                        {% if files %}
+                            {% for file in files %}
+                            <div class="file-item">
+                                <div class="file-icon"><i class="bi bi-file-earmark-fill"></i></div>
+                                <div class="file-info">
+                                    <div class="name">{{ file.name }}</div>
+                                    <div class="meta">{{ file.size }} &bull; {{ file.date }}</div>
+                                </div>
+                                <div class="file-actions">
+                                    <a href="/download/{{ file.name }}" class="action-btn" title="Download"><i class="bi bi-download"></i></a>
+                                    <a href="/delete/{{ file.name }}" class="action-btn delete" title="Delete" onclick="return confirm('Delete this file?')"><i class="bi bi-trash3-fill"></i></a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="bi bi-folder2-open"></i>
+                                <p>No files yet</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header purple">
+                    <i class="bi bi-inbox-fill"></i>
+                    <h3>Inbox</h3>
+                    <span class="badge">{{ received_files|length }} received</span>
+                </div>
+                <div class="card-body">
+                    <div class="file-list">
+                        {% if received_files %}
+                            {% for log in received_files %}
+                            <div class="file-item inbox">
+                                <div class="file-icon"><i class="bi bi-file-earmark-arrow-down-fill"></i></div>
+                                <div class="file-info">
+                                    <div class="name">{{ log.filename }}</div>
+                                    <div class="meta">
+                                        <span class="from-tag">{{ log.sender }}</span>
+                                        {{ log.time }}
+                                    </div>
+                                </div>
+                                <div class="file-actions">
+                                    <a href="/download/{{ log.filename }}" class="action-btn" title="Download"><i class="bi bi-download"></i></a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <p>No files received</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileReady = document.getElementById('fileReady');
+const fileName = document.getElementById('fileName');
+const removeFile = document.getElementById('removeFile');
+const sendBtn = document.getElementById('sendBtn');
+const selectAllBtn = document.getElementById('selectAllBtn');
+const selectedCount = document.getElementById('selectedCount');
+const countText = document.getElementById('countText');
+const hiddenInputs = document.getElementById('hiddenInputs');
+const recipientItems = document.querySelectorAll('.recipient-item');
+
+let fileSelected = false;
+let selectedUsers = new Set();
+
+// File handling
+dropZone.onclick = () => fileInput.click();
+dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('active'); };
+dropZone.ondragleave = () => dropZone.classList.remove('active');
+
+dropZone.ondrop = (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('active');
+    if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        showFile(e.dataTransfer.files[0]);
+    }
+};
+
+fileInput.onchange = () => {
+    if (fileInput.files.length) showFile(fileInput.files[0]);
+};
+
+function showFile(f) {
+    fileName.textContent = f.name;
+    fileReady.style.display = 'flex';
+    dropZone.style.display = 'none';
+    fileSelected = true;
+    updateSendBtn();
+}
+
+removeFile.onclick = () => {
+    fileInput.value = '';
+    fileReady.style.display = 'none';
+    dropZone.style.display = 'block';
+    fileSelected = false;
+    updateSendBtn();
+};
+
+// Multi-select recipients
+recipientItems.forEach(item => {
+    item.onclick = () => {
+        const user = item.dataset.user;
+        if (selectedUsers.has(user)) {
+            selectedUsers.delete(user);
+            item.classList.remove('selected');
+        } else {
+            selectedUsers.add(user);
+            item.classList.add('selected');
+        }
+        updateSelectionUI();
+    };
+});
+
+// Select All
+selectAllBtn.onclick = () => {
+    const allSelected = selectedUsers.size === recipientItems.length;
+    
+    if (allSelected) {
+        // Deselect all
+        selectedUsers.clear();
+        recipientItems.forEach(item => item.classList.remove('selected'));
+        selectAllBtn.classList.remove('active');
+        selectAllBtn.innerHTML = '<i class="bi bi-check-all"></i> Select All';
+    } else {
+        // Select all
+        recipientItems.forEach(item => {
+            selectedUsers.add(item.dataset.user);
+            item.classList.add('selected');
+        });
+        selectAllBtn.classList.add('active');
+        selectAllBtn.innerHTML = '<i class="bi bi-x-lg"></i> Deselect All';
+    }
+    updateSelectionUI();
+};
+
+function updateSelectionUI() {
+    const count = selectedUsers.size;
+    
+    // Update hidden inputs
+    hiddenInputs.innerHTML = '';
+    selectedUsers.forEach(user => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'receivers';
+        input.value = user;
+        hiddenInputs.appendChild(input);
+    });
+    
+    // Update count display
+    if (count > 0) {
+        selectedCount.style.display = 'flex';
+        countText.textContent = count === 1 ? '1 recipient selected' : count + ' recipients selected';
+    } else {
+        selectedCount.style.display = 'none';
+    }
+    
+    // Update select all button state
+    if (selectedUsers.size === recipientItems.length && recipientItems.length > 0) {
+        selectAllBtn.classList.add('active');
+        selectAllBtn.innerHTML = '<i class="bi bi-x-lg"></i> Deselect All';
+    } else {
+        selectAllBtn.classList.remove('active');
+        selectAllBtn.innerHTML = '<i class="bi bi-check-all"></i> Select All';
+    }
+    
+    updateSendBtn();
+}
+
+function updateSendBtn() {
+    sendBtn.disabled = !(fileSelected && selectedUsers.size > 0);
+}
+</script>
 
 </body>
 </html>
