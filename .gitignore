@@ -4,3 +4,7 @@ file_log.json
 __pycache__/
 *.pyc
 .env
+.secret_key
+.admin_hash
+cert.pem
+key.pem

@@ -15,7 +15,12 @@ A file sharing app we built for our Networks Lab at SSN College of Engineering. 
 
 1. Install the requirements:
 ```
-pip install flask psutil
+pip install -r requirements.txt
+```
+
+Or install individually:
+```
+pip install flask psutil bcrypt cryptography
 ```
 
 2. Run the app:
@@ -23,12 +28,24 @@ pip install flask psutil
 python app.py
 ```
 
-3. Open in browser - it shows both localhost and your LAN IP so others can access it
+3. Open in browser:
+   - **HTTPS** (recommended): `https://127.0.0.1:5000` (self-signed cert - browser will show warning, click "Advanced" → "Proceed")
+   - **HTTP**: `http://127.0.0.1:5000` (if HTTPS not available)
+   - The terminal shows your LAN IP for network access
 
+## Security Features
+
+🔒 **Password Hashing** - Passwords are hashed using bcrypt (never stored in plain text)  
+🔒 **HTTPS/TLS** - Encrypted file transfers (self-signed certificate for LAN use)  
+🔒 **Strong Session Keys** - Automatically generated secure secret keys  
+🔒 **File Validation** - File type and size restrictions  
+🔒 **Path Traversal Protection** - Prevents directory escape attacks  
 
 ## Tech used
 
 - Flask (Python)
 - HTML/CSS/JS
 - psutil for system stats
+- bcrypt for password hashing
+- cryptography for HTTPS/TLS encryption
 
